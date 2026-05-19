@@ -1,0 +1,44 @@
+@model List<BookFeedback>
+@{ ViewData["Title"] = "Book Feedback"; }
+
+<div class="container">
+    <h2 class="page-title">Book Feedback & Reviews</h2>
+    <p class="result-count">@Model.Count review(s)</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Book</th>
+                <th>Rating</th>
+                <th>Comment</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var fb in Model)
+            {
+                <tr>
+                    <td>@fb.User.FullName</td>
+                    <td><a asp-controller="Books" asp-action="Details" asp-route-id="@fb.BookId">@fb.Book.Title</a></td>
+                    <td>@fb.Rating / 5</td>
+                    <td>@(string.IsNullOrEmpty(fb.Comment) ? "—" : fb.Comment.Length > 80 ? fb.Comment[..80] + "..." : fb.Comment)</td>
+                    <td>@fb.SubmittedAt.ToString("dd MMM yyyy")</td>
+                    <td>
+                        <span class="badge @(fb.IsApproved ? "badge-available" : "badge-unavailable")">
+                            @(fb.IsApproved ? "Approved" : "Hidden")
+                        </span>
+                    </td>
+                    <td>
+                        <form asp-action="DeleteFeedback" method="post" style="display:inline" onsubmit="return confirm('Delete this review?')">
+                            <input type="hidden" name="id" value="@fb.FeedbackId" />
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

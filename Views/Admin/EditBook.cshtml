@@ -1,0 +1,81 @@
+@model BookFormViewModel
+@{ ViewData["Title"] = "Edit Book"; }
+
+<div class="container">
+    <div class="form-box form-box--wide">
+        <h2>Edit Book</h2>
+        <form asp-action="EditBook" asp-route-id="@Model.BookId" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Title"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Author"></label>
+                    <input asp-for="Author" class="form-control" />
+                    <span asp-validation-for="Author" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Genre"></label>
+                    <input asp-for="Genre" class="form-control" />
+                    <span asp-validation-for="Genre" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ISBN"></label>
+                    <input asp-for="ISBN" class="form-control" />
+                    <span asp-validation-for="ISBN" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Publisher"></label>
+                    <input asp-for="Publisher" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="PublishedYear"></label>
+                    <input asp-for="PublishedYear" class="form-control" type="number" />
+                    <span asp-validation-for="PublishedYear" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="TotalCopies"></label>
+                    <input asp-for="TotalCopies" class="form-control" type="number" min="1" />
+                    <span asp-validation-for="TotalCopies" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Status"></label>
+                    <select asp-for="Status" class="form-control"
+                        asp-items="Html.GetEnumSelectList<BookStatus>()"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Summary"></label>
+                <textarea asp-for="Summary" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                @if (!string.IsNullOrEmpty(Model.ExistingCoverImagePath))
+                {
+                    <p>Current cover: <img src="@Model.ExistingCoverImagePath" style="height:60px;border:1px solid #000;" /></p>
+                }
+                <label>Replace Cover Image (optional)</label>
+                <input asp-for="CoverImage" type="file" class="form-control" accept="image/*" />
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn">Save Changes</button>
+                <a asp-action="Books" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

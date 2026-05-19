@@ -1,0 +1,82 @@
+@model LibraryMS.Models.LibraryProfile
+@{ ViewData["Title"] = "Library Settings"; }
+
+<div class="container">
+    <div class="form-box form-box--wide">
+        <h2>Library Profile & Settings</h2>
+        <form asp-action="LibraryProfile" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+            <h3 class="form-section-title">Library Information</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Location"></label>
+                    <input asp-for="Location" class="form-control" />
+                    <span asp-validation-for="Location" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="OperatingHours"></label>
+                    <input asp-for="OperatingHours" class="form-control" placeholder="Mon-Fri 9:00AM - 5:00PM" />
+                    <span asp-validation-for="OperatingHours" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ContactEmail"></label>
+                    <input asp-for="ContactEmail" class="form-control" />
+                    <span asp-validation-for="ContactEmail" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="ContactPhone"></label>
+                    <input asp-for="ContactPhone" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description"></label>
+                    <input asp-for="Description" class="form-control" />
+                </div>
+            </div>
+
+            <h3 class="form-section-title">Borrowing Parameters</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="LoanDurationDays"></label>
+                    <input asp-for="LoanDurationDays" class="form-control" type="number" min="1" max="365" />
+                    <span asp-validation-for="LoanDurationDays" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="RenewalLimit"></label>
+                    <input asp-for="RenewalLimit" class="form-control" type="number" min="0" max="10" />
+                    <span asp-validation-for="RenewalLimit" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="OverduePenaltyPerDay"></label>
+                    <input asp-for="OverduePenaltyPerDay" class="form-control" type="number" step="0.50" min="0" />
+                    <span asp-validation-for="OverduePenaltyPerDay" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MaxBorrowableItems"></label>
+                    <input asp-for="MaxBorrowableItems" class="form-control" type="number" min="1" max="20" />
+                    <span asp-validation-for="MaxBorrowableItems" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn">Save Settings</button>
+            </div>
+        </form>
+    </div>
+</div>

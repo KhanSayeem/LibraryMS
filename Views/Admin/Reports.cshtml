@@ -1,0 +1,120 @@
+@model ReportsViewModel
+@{ ViewData["Title"] = "Reports"; }
+
+<div class="container">
+    <h2 class="page-title">Library Reports</h2>
+
+    <div class="stats-row">
+        <div class="stat-box">
+            <div class="stat-number">@Model.TotalBorrows</div>
+            <div class="stat-label">Total Borrows</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">@Model.TotalReturned</div>
+            <div class="stat-label">Returned</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">@Model.OverdueTransactions.Count</div>
+            <div class="stat-label">Currently Overdue</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">৳@Model.TotalFinesCollected.ToString("F2")</div>
+            <div class="stat-label">Fines Collected</div>
+        </div>
+    </div>
+
+    <section class="section">
+        <h2 class="section-title">Most Popular Books</h2>
+        <table class="data-table">
+            <thead>
+                <tr><th>Rank</th><th>Title</th><th>Author</th><th>Genre</th><th>Total Borrows</th></tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.MostPopularBooks.Count; i++)
+                {
+                    var s = Model.MostPopularBooks[i];
+                    <tr>
+                        <td>#@(i + 1)</td>
+                        <td><a asp-controller="Books" asp-action="Details" asp-route-id="@s.Book.BookId">@s.Book.Title</a></td>
+                        <td>@s.Book.Author</td>
+                        <td>@s.Book.Genre</td>
+                        <td>@s.BorrowCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Most Active Members</h2>
+        <table class="data-table">
+            <thead>
+                <tr><th>Rank</th><th>Member</th><th>Email</th><th>Total Borrows</th></tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.MostActiveMembers.Count; i++)
+                {
+                    var s = Model.MostActiveMembers[i];
+                    <tr>
+                        <td>#@(i + 1)</td>
+                        <td>@s.Member.FullName</td>
+                        <td>@s.Member.Email</td>
+                        <td>@s.BorrowCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Overdue Books</h2>
+        @if (!Model.OverdueTransactions.Any())
+        {
+            <p class="empty-state">No overdue books. Great!</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr><th>Member</th><th>Book</th><th>Due Date</th><th>Days Overdue</th><th>Fine</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var tx in Model.OverdueTransactions)
+                    {
+                        int daysOverdue = (DateTime.Today - tx.DueDate).Days;
+                        <tr class="row-overdue">
+                            <td>@tx.User.FullName</td>
+                            <td>@tx.Book.Title</td>
+                            <td>@tx.DueDate.ToString("dd MMM yyyy")</td>
+                            <td>@daysOverdue day(s)</td>
+                            <td>৳@tx.FineAmount.ToString("F2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Monthly Borrowing Trends</h2>
+        <table class="data-table">
+            <thead>
+                <tr><th>Month</th><th>Total Borrows</th><th>Bar</th></tr>
+            </thead>
+            <tbody>
+                @{
+                    int max = Model.MonthlyTrends.Any() ? Model.MonthlyTrends.Max(m => m.Count) : 1;
+                }
+                @foreach (var trend in Model.MonthlyTrends)
+                {
+                    int pct = max == 0 ? 0 : (trend.Count * 100 / max);
+                    <tr>
+                        <td>@trend.Month</td>
+                        <td>@trend.Count</td>
+                        <td><div class="bar-cell"><div class="bar" style="width:@pct%">@trend.Count</div></div></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+</div>

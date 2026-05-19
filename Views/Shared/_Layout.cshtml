@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — LibraryMS</title>
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="site-logo" asp-controller="Home" asp-action="Index">LIBRARY<span>MS</span></a>
+            <nav class="site-nav">
+                <a asp-controller="Home" asp-action="Index">Home</a>
+                <a asp-controller="Books" asp-action="Index">Browse Books</a>
+
+                @if (Context.Session.GetString("UserRole") == "Admin")
+                {
+                    <a asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
+                    <a asp-controller="Admin" asp-action="Books">Manage Books</a>
+                    <a asp-controller="Admin" asp-action="Transactions">Transactions</a>
+                    <a asp-controller="Admin" asp-action="Members">Members</a>
+                    <a asp-controller="Admin" asp-action="Reports">Reports</a>
+                    <a asp-controller="Admin" asp-action="Feedback">Feedback</a>
+                    <a asp-controller="Auth" asp-action="Logout" class="nav-logout">Logout</a>
+                }
+                else if (Context.Session.GetString("UserRole") == "Member")
+                {
+                    <a asp-controller="Member" asp-action="Dashboard">My Account</a>
+                    <a asp-controller="Auth" asp-action="Logout" class="nav-logout">Logout</a>
+                }
+                else
+                {
+                    <a asp-controller="Auth" asp-action="Login">Login</a>
+                    <a asp-controller="Auth" asp-action="Register" class="nav-register">Register</a>
+                }
+            </nav>
+        </div>
+    </header>
+
+    <main class="site-main">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-error">@TempData["Error"]</div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <span>LibraryMS &copy; @DateTime.Now.Year</span>
+            <span>Group Project — CSE Department</span>
+        </div>
+    </footer>
+
+    <script src="/js/site.js"></script>
+</body>
+</html>

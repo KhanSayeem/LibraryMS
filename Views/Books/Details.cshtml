@@ -1,0 +1,135 @@
+@model Book
+@{ ViewData["Title"] = Model.Title; }
+
+<div class="container">
+    <a asp-action="Index" class="back-link">Back to Books</a>
+
+    <div class="book-detail">
+        <div class="book-detail-cover">
+            @if (!string.IsNullOrEmpty(Model.CoverImagePath))
+            {
+                <img src="@Model.CoverImagePath" alt="@Model.Title" />
+            }
+            else
+            {
+                <div class="book-cover-placeholder large">@Model.Title[0]</div>
+            }
+        </div>
+
+        <div class="book-detail-info">
+            <h1>@Model.Title</h1>
+            <p class="book-author-lg">by @Model.Author</p>
+
+            <table class="info-table">
+                <tr><th>Genre</th><td>@Model.Genre</td></tr>
+                <tr><th>ISBN</th><td>@Model.ISBN</td></tr>
+                <tr><th>Publisher</th><td>@(Model.Publisher ?? "N/A")</td></tr>
+                <tr><th>Published</th><td>@(Model.PublishedYear != null ? Model.PublishedYear.ToString() : "N/A")</td></tr>
+                <tr><th>Copies</th><td>@Model.AvailableCopies available of @Model.TotalCopies</td></tr>
+                <tr><th>Status</th><td><span class="badge badge-@Model.Status.ToString().ToLower()">@Model.Status</span></td></tr>
+                <tr>
+                    <th>Rating</th>
+                    <td>
+                        @if (Model.Feedbacks.Any())
+                        {
+                            <span>@Model.AverageRating.ToString("F1") / 5 (@Model.Feedbacks.Count review(s))</span>
+                        }
+                        else
+                        {
+                            <span>No reviews yet</span>
+                        }
+                    </td>
+                </tr>
+            </table>
+
+            @if (!string.IsNullOrEmpty(Model.Summary))
+            {
+                <div class="book-summary">
+                    <h3>Summary</h3>
+                    <p>@Model.Summary</p>
+                </div>
+            }
+
+            @if (Context.Session.GetString("UserRole") == "Member")
+            {
+                <form asp-controller="Member" asp-action="Borrow" method="post" style="margin-top:1.5rem;">
+                    <input type="hidden" name="bookId" value="@Model.BookId" />
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn">
+                        @(Model.AvailableCopies > 0 ? "Borrow This Book" : "Reserve This Book")
+                    </button>
+                </form>
+            }
+            else if (Context.Session.GetInt32("UserId") == null)
+            {
+                <p style="margin-top:1rem;"><a asp-controller="Auth" asp-action="Login">Login</a> to borrow this book.</p>
+            }
+        </div>
+    </div>
+
+    <section class="section">
+        <h2 class="section-title">Reader Reviews</h2>
+
+        @{
+            var approvedFeedbacks = Model.Feedbacks.Where(f => f.IsApproved).OrderByDescending(f => f.SubmittedAt).ToList();
+        }
+
+        @if (!approvedFeedbacks.Any())
+        {
+            <p class="empty-state">No reviews yet.</p>
+        }
+        else
+        {
+            foreach (var fb in approvedFeedbacks)
+            {
+                <div class="review-card">
+                    <div class="review-header">
+                        <strong>@fb.User.FullName</strong>
+                        <span class="review-rating">@fb.Rating / 5</span>
+                        <span class="review-date">@fb.SubmittedAt.ToString("dd MMM yyyy")</span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(fb.Comment))
+                    {
+                        <p>@fb.Comment</p>
+                    }
+                </div>
+            }
+        }
+
+        @{
+            bool alreadyReviewed = (bool)ViewBag.AlreadyReviewed;
+            string? userRole = Context.Session.GetString("UserRole");
+        }
+
+        @if (userRole == "Member" && !alreadyReviewed)
+        {
+            <div class="review-form-box">
+                <h3>Leave a Review</h3>
+                <form asp-controller="Member" asp-action="SubmitFeedback" method="post">
+                    <input type="hidden" name="bookId" value="@Model.BookId" />
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <label>Rating (1-5)</label>
+                        <select name="rating" class="form-control" required>
+                            <option value="">Select...</option>
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Good</option>
+                            <option value="3">3 - Average</option>
+                            <option value="2">2 - Poor</option>
+                            <option value="1">1 - Terrible</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Comment (optional)</label>
+                        <textarea name="comment" class="form-control" rows="3" maxlength="1000"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Submit Review</button>
+                </form>
+            </div>
+        }
+        else if (alreadyReviewed)
+        {
+            <p class="hint">You have already reviewed this book.</p>
+        }
+    </section>
+</div>

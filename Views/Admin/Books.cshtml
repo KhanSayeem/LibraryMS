@@ -1,0 +1,51 @@
+@model List<Book>
+@{ ViewData["Title"] = "Manage Books"; }
+
+<div class="container">
+    <div class="page-header">
+        <h2 class="page-title">Manage Books</h2>
+        <a class="btn" asp-action="AddBook">+ Add Book</a>
+    </div>
+
+    <form method="get" class="filter-bar">
+        <input name="search" value="@ViewBag.Search" class="form-control" placeholder="Search by title or author..." />
+        <button type="submit" class="btn">Search</button>
+        <a asp-action="Books" class="btn btn-outline">Clear</a>
+    </form>
+
+    <p class="result-count">@Model.Count book(s)</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>ISBN</th>
+                <th>Copies</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model)
+            {
+                <tr>
+                    <td><a asp-controller="Books" asp-action="Details" asp-route-id="@book.BookId">@book.Title</a></td>
+                    <td>@book.Author</td>
+                    <td>@book.Genre</td>
+                    <td>@book.ISBN</td>
+                    <td>@book.AvailableCopies / @book.TotalCopies</td>
+                    <td><span class="badge badge-@book.Status.ToString().ToLower()">@book.Status</span></td>
+                    <td class="actions-cell">
+                        <a asp-action="EditBook" asp-route-id="@book.BookId" class="btn btn-sm">Edit</a>
+                        <form asp-action="DeleteBook" method="post" style="display:inline" onsubmit="return confirm('Delete this book?')">
+                            <input type="hidden" name="id" value="@book.BookId" />
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

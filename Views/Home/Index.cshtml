@@ -1,0 +1,114 @@
+@model HomeViewModel
+@{ ViewData["Title"] = "Home"; }
+
+<section class="hero">
+    <div class="hero-inner">
+        <h1>@(Model.LibraryInfo?.Name ?? "Library Management System")</h1>
+        @if (Model.LibraryInfo != null)
+        {
+            <p>@Model.LibraryInfo.Location &nbsp;|&nbsp; @Model.LibraryInfo.OperatingHours</p>
+        }
+        <div class="hero-actions">
+            <a class="btn" asp-controller="Books" asp-action="Index">Browse Books</a>
+            @if (Context.Session.GetInt32("UserId") == null)
+            {
+                <a class="btn btn-outline" asp-controller="Auth" asp-action="Register">Join as Member</a>
+            }
+        </div>
+    </div>
+</section>
+
+<div class="container">
+
+    <!-- Group Info Table -->
+    <section class="section">
+        <h2 class="section-title">Project Group</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Full Name</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>20030464</td>
+                    <td><strong>Md Ishtiakur Rahman Emu</strong></td>
+                    <td>Group Leader</td>
+                </tr>
+                <tr>
+                    <td>20033529</td>
+                    <td>Nosrat Jahan</td>
+                    <td>Member</td>
+                </tr>
+                <tr>
+                    <td>20030919</td>
+                    <td>Arman Ahmed Rifat</td>
+                    <td>Member</td>
+                </tr>
+                <tr>
+                    <td>20032488</td>
+                    <td>Towhidul Islam</td>
+                    <td>Member</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- New Arrivals -->
+    <section class="section">
+        <h2 class="section-title">New Arrivals</h2>
+        <div class="book-grid">
+            @foreach (var book in Model.NewArrivals)
+            {
+                <a class="book-card" asp-controller="Books" asp-action="Details" asp-route-id="@book.BookId">
+                    <div class="book-cover">
+                        @if (!string.IsNullOrEmpty(book.CoverImagePath))
+                        {
+                            <img src="@book.CoverImagePath" alt="@book.Title" />
+                        }
+                        else
+                        {
+                            <div class="book-cover-placeholder">@book.Title[0]</div>
+                        }
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">@book.Title</div>
+                        <div class="book-author">@book.Author</div>
+                        <div class="book-genre">@book.Genre</div>
+                        <span class="badge badge-@book.Status.ToString().ToLower()">@book.Status</span>
+                    </div>
+                </a>
+            }
+        </div>
+    </section>
+
+    <!-- Most Borrowed -->
+    <section class="section">
+        <h2 class="section-title">Most Borrowed</h2>
+        <div class="book-grid">
+            @foreach (var book in Model.MostBorrowed)
+            {
+                <a class="book-card" asp-controller="Books" asp-action="Details" asp-route-id="@book.BookId">
+                    <div class="book-cover">
+                        @if (!string.IsNullOrEmpty(book.CoverImagePath))
+                        {
+                            <img src="@book.CoverImagePath" alt="@book.Title" />
+                        }
+                        else
+                        {
+                            <div class="book-cover-placeholder">@book.Title[0]</div>
+                        }
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">@book.Title</div>
+                        <div class="book-author">@book.Author</div>
+                        <span class="badge badge-@book.Status.ToString().ToLower()">@book.Status</span>
+                    </div>
+                </a>
+            }
+        </div>
+    </section>
+
+</div>

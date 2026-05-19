@@ -1,0 +1,59 @@
+@model List<Book>
+@{ ViewData["Title"] = "Browse Books"; }
+
+<div class="container">
+    <h2 class="page-title">Browse Books</h2>
+
+    <form method="get" class="filter-bar">
+        <input name="search" value="@ViewBag.Search" class="form-control" placeholder="Search title, author, ISBN..." />
+        <select name="genre" class="form-control">
+            <option value="">All Genres</option>
+            @foreach (var g in (List<string>)ViewBag.Genres)
+            {
+                <option value="@g" selected="@(ViewBag.Genre == g ? "selected" : null)">@g</option>
+            }
+        </select>
+        <select name="status" class="form-control">
+            <option value="">All Status</option>
+            <option value="Available" selected="@(ViewBag.Status == "Available" ? "selected" : null)">Available</option>
+            <option value="Borrowed" selected="@(ViewBag.Status == "Borrowed" ? "selected" : null)">Borrowed</option>
+            <option value="Reserved" selected="@(ViewBag.Status == "Reserved" ? "selected" : null)">Reserved</option>
+        </select>
+        <button type="submit" class="btn">Filter</button>
+        <a asp-action="Index" class="btn btn-outline">Clear</a>
+    </form>
+
+    <p class="result-count">@Model.Count book(s) found</p>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">No books match your search.</div>
+    }
+    else
+    {
+        <div class="book-grid-wide">
+            @foreach (var book in Model)
+            {
+                <a class="book-card" asp-action="Details" asp-route-id="@book.BookId">
+                    <div class="book-cover">
+                        @if (!string.IsNullOrEmpty(book.CoverImagePath))
+                        {
+                            <img src="@book.CoverImagePath" alt="@book.Title" />
+                        }
+                        else
+                        {
+                            <div class="book-cover-placeholder">@book.Title[0]</div>
+                        }
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">@book.Title</div>
+                        <div class="book-author">@book.Author</div>
+                        <div class="book-meta">@book.Genre &nbsp;|&nbsp; @(book.PublishedYear?.ToString() ?? "N/A")</div>
+                        <div class="book-copies">@book.AvailableCopies / @book.TotalCopies available</div>
+                        <span class="badge badge-@book.Status.ToString().ToLower()">@book.Status</span>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>

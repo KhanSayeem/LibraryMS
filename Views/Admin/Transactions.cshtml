@@ -1,0 +1,64 @@
+@model List<BorrowTransaction>
+@{ ViewData["Title"] = "Transactions"; }
+
+<div class="container">
+    <h2 class="page-title">Borrow Transactions</h2>
+
+    <div class="filter-bar">
+        <a asp-action="Transactions" class="btn @(ViewBag.Filter == null ? "btn-active" : "btn-outline")">All</a>
+        <a asp-action="Transactions" asp-route-filter="Borrowed" class="btn @(ViewBag.Filter == "Borrowed" ? "btn-active" : "btn-outline")">Borrowed</a>
+        <a asp-action="Transactions" asp-route-filter="Reserved" class="btn @(ViewBag.Filter == "Reserved" ? "btn-active" : "btn-outline")">Reserved</a>
+        <a asp-action="Transactions" asp-route-filter="Overdue" class="btn @(ViewBag.Filter == "Overdue" ? "btn-active" : "btn-outline")">Overdue</a>
+        <a asp-action="Transactions" asp-route-filter="Returned" class="btn @(ViewBag.Filter == "Returned" ? "btn-active" : "btn-outline")">Returned</a>
+    </div>
+
+    <p class="result-count">@Model.Count transaction(s)</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Book</th>
+                <th>Status</th>
+                <th>Borrow Date</th>
+                <th>Due Date</th>
+                <th>Returned</th>
+                <th>Fine</th>
+                <th>Paid</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tx in Model)
+            {
+                bool overdue = tx.IsOverdue;
+                <tr class="@(overdue ? "row-overdue" : "")">
+                    <td>@tx.User.FullName</td>
+                    <td>@tx.Book.Title</td>
+                    <td><span class="badge badge-@tx.Status.ToString().ToLower()">@(overdue ? "Overdue" : tx.Status.ToString())</span></td>
+                    <td>@tx.BorrowDate.ToString("dd MMM yy")</td>
+                    <td class="@(overdue ? "text-danger" : "")">@tx.DueDate.ToString("dd MMM yy")</td>
+                    <td>@(tx.ReturnDate.HasValue ? tx.ReturnDate.Value.ToString("dd MMM yy") : "—")</td>
+                    <td>@(tx.FineAmount > 0 ? "৳" + tx.FineAmount.ToString("F2") : "—")</td>
+                    <td>@(tx.FinePaid > 0 ? "৳" + tx.FinePaid.ToString("F2") : "—")</td>
+                    <td class="actions-cell">
+                        @if (tx.Status == TransactionStatus.Borrowed || tx.Status == TransactionStatus.Reserved)
+                        {
+                            <form asp-action="MarkReturned" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@tx.TransactionId" />
+                                <button type="submit" class="btn btn-sm">Mark Returned</button>
+                            </form>
+                        }
+                        @if (tx.FineAmount > tx.FinePaid && tx.FineAmount > 0)
+                        {
+                            <form asp-action="RecordFinePaid" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@tx.TransactionId" />
+                                <button type="submit" class="btn btn-sm">Fine Paid</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

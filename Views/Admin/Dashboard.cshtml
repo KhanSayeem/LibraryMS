@@ -1,0 +1,87 @@
+@model AdminDashboardViewModel
+@{ ViewData["Title"] = "Admin Dashboard"; }
+
+<div class="container">
+    <h2 class="page-title">Admin Dashboard</h2>
+
+    <div class="stats-row">
+        <div class="stat-box">
+            <div class="stat-number">@Model.TotalBooks</div>
+            <div class="stat-label">Total Books</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">@Model.TotalMembers</div>
+            <div class="stat-label">Active Members</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">@Model.ActiveBorrows</div>
+            <div class="stat-label">Active Borrows</div>
+        </div>
+        <div class="stat-box @(Model.OverdueCount > 0 ? "stat-box--alert" : "")">
+            <div class="stat-number">@Model.OverdueCount</div>
+            <div class="stat-label">Overdue</div>
+        </div>
+        <div class="stat-box @(Model.TotalFinesOutstanding > 0 ? "stat-box--alert" : "")">
+            <div class="stat-number">৳@Model.TotalFinesOutstanding.ToString("F2")</div>
+            <div class="stat-label">Fines Outstanding</div>
+        </div>
+    </div>
+
+    <div class="admin-quicklinks">
+        <a class="btn" asp-controller="Admin" asp-action="AddBook">+ Add Book</a>
+        <a class="btn btn-outline" asp-controller="Admin" asp-action="Books">Manage Books</a>
+        <a class="btn btn-outline" asp-controller="Admin" asp-action="Transactions">Transactions</a>
+        <a class="btn btn-outline" asp-controller="Admin" asp-action="Reports">Reports</a>
+        <a class="btn btn-outline" asp-controller="Admin" asp-action="LibraryProfile">Library Settings</a>
+    </div>
+
+    <section class="section">
+        <h2 class="section-title">Recent Transactions</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Book</th>
+                    <th>Status</th>
+                    <th>Borrow Date</th>
+                    <th>Due Date</th>
+                    <th>Fine</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tx in Model.RecentTransactions)
+                {
+                    <tr class="@(tx.IsOverdue ? "row-overdue" : "")">
+                        <td>@(tx.User?.FullName ?? "Unknown Member")</td>
+                        <td>@(tx.Book?.Title ?? "Unknown Book")</td>
+                        <td><span class="badge badge-@tx.Status.ToString().ToLower()">@tx.Status</span></td>
+                        <td>@tx.BorrowDate.ToString("dd MMM yyyy")</td>
+                        <td>@tx.DueDate.ToString("dd MMM yyyy")</td>
+                        <td>@(tx.FineAmount > 0 ? "৳" + tx.FineAmount.ToString("F2") : "—")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Recently Added Books</h2>
+        <table class="data-table">
+            <thead>
+                <tr><th>Title</th><th>Author</th><th>Genre</th><th>Copies</th><th>Added</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var b in Model.RecentlyAdded)
+                {
+                    <tr>
+                        <td><a asp-controller="Books" asp-action="Details" asp-route-id="@b.BookId">@b.Title</a></td>
+                        <td>@b.Author</td>
+                        <td>@b.Genre</td>
+                        <td>@b.TotalCopies</td>
+                        <td>@b.AddedAt.ToString("dd MMM yyyy")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+</div>

@@ -1,0 +1,46 @@
+@model List<User>
+@{ ViewData["Title"] = "Members"; }
+
+<div class="container">
+    <h2 class="page-title">Library Members</h2>
+    <p class="result-count">@Model.Count member(s)</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Member Since</th>
+                <th>Total Borrows</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var m in Model)
+            {
+                <tr class="@(!m.IsActive ? "row-inactive" : "")">
+                    <td>@m.FullName</td>
+                    <td>@m.Email</td>
+                    <td>@(m.PhoneNumber ?? "—")</td>
+                    <td>@m.CreatedAt.ToString("dd MMM yyyy")</td>
+                    <td>@m.BorrowTransactions.Count</td>
+                    <td>
+                        <span class="badge @(m.IsActive ? "badge-available" : "badge-unavailable")">
+                            @(m.IsActive ? "Active" : "Suspended")
+                        </span>
+                    </td>
+                    <td>
+                        <form asp-action="ToggleMember" method="post" style="display:inline">
+                            <input type="hidden" name="id" value="@m.UserId" />
+                            <button type="submit" class="btn btn-sm @(!m.IsActive ? "" : "btn-danger")">
+                                @(m.IsActive ? "Suspend" : "Reinstate")
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,118 @@
+@model MemberDashboardViewModel
+@{ ViewData["Title"] = "My Account"; }
+
+<div class="container">
+    <h2 class="page-title">My Account</h2>
+
+    <div class="stats-row">
+        <div class="stat-box">
+            <div class="stat-number">@Model.ActiveBorrowCount</div>
+            <div class="stat-label">Active Borrows</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">@Model.BorrowHistory.Count</div>
+            <div class="stat-label">Books Read</div>
+        </div>
+        <div class="stat-box @(Model.TotalOutstandingFines > 0 ? "stat-box--alert" : "")">
+            <div class="stat-number">৳@Model.TotalOutstandingFines.ToString("F2")</div>
+            <div class="stat-label">Outstanding Fines</div>
+        </div>
+    </div>
+
+    <div class="profile-info">
+        <h3>Profile</h3>
+        <table class="info-table">
+            <tr><th>Name</th><td>@Model.Member.FullName</td></tr>
+            <tr><th>Email</th><td>@Model.Member.Email</td></tr>
+            <tr><th>Phone</th><td>@(Model.Member.PhoneNumber ?? "Not provided")</td></tr>
+            <tr><th>Member Since</th><td>@Model.Member.CreatedAt.ToString("dd MMM yyyy")</td></tr>
+        </table>
+    </div>
+
+    <!-- Active Borrows -->
+    <section class="section">
+        <h2 class="section-title">Active Borrows</h2>
+        @if (!Model.ActiveBorrows.Any())
+        {
+            <p class="empty-state">No active borrows. <a asp-controller="Books" asp-action="Index">Browse books</a></p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Status</th>
+                        <th>Borrow Date</th>
+                        <th>Due Date</th>
+                        <th>Renewals</th>
+                        <th>Fine</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tx in Model.ActiveBorrows)
+                    {
+                        bool overdue = tx.DueDate < DateTime.Today && tx.Status == TransactionStatus.Borrowed;
+                        <tr class="@(overdue ? "row-overdue" : "")">
+                            <td>
+                                <a asp-controller="Books" asp-action="Details" asp-route-id="@tx.BookId">@tx.Book.Title</a>
+                            </td>
+                            <td>
+                                <span class="badge badge-@tx.Status.ToString().ToLower()">
+                                    @(overdue ? "Overdue" : tx.Status.ToString())
+                                </span>
+                            </td>
+                            <td>@tx.BorrowDate.ToString("dd MMM yyyy")</td>
+                            <td class="@(overdue ? "text-danger" : "")">@tx.DueDate.ToString("dd MMM yyyy")</td>
+                            <td>@tx.RenewalsUsed used</td>
+                            <td>@(tx.FineAmount > 0 ? "৳" + tx.FineAmount.ToString("F2") : "—")</td>
+                            <td>
+                                @if (tx.Status == TransactionStatus.Borrowed)
+                                {
+                                    <form asp-controller="Member" asp-action="Renew" method="post" style="display:inline">
+                                        <input type="hidden" name="transactionId" value="@tx.TransactionId" />
+                                        <button type="submit" class="btn btn-sm">Renew</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <!-- Borrow History -->
+    <section class="section">
+        <h2 class="section-title">Borrow History</h2>
+        @if (!Model.BorrowHistory.Any())
+        {
+            <p class="empty-state">No borrowing history yet.</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Borrow Date</th>
+                        <th>Returned</th>
+                        <th>Fine Paid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tx in Model.BorrowHistory)
+                    {
+                        <tr>
+                            <td><a asp-controller="Books" asp-action="Details" asp-route-id="@tx.BookId">@tx.Book.Title</a></td>
+                            <td>@tx.BorrowDate.ToString("dd MMM yyyy")</td>
+                            <td>@(tx.ReturnDate.HasValue ? tx.ReturnDate.Value.ToString("dd MMM yyyy") : "—")</td>
+                            <td>@(tx.FinePaid > 0 ? "৳" + tx.FinePaid.ToString("F2") : "—")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+</div>
