@@ -4,31 +4,21 @@ A comprehensive Library Management System designed to streamline library operati
 
 ## Features
 
-- 📚 **Book Management** - Add, update, and manage book inventory
-- 👥 **User Management** - Register and manage library members
-- 🔍 **Search & Filter** - Easily search books by title, author, ISBN, or category
-- 📋 **Borrowing System** - Track book borrowing and returns
-- 📅 **Due Date Management** - Automated reminders for overdue books
-- 📊 **Reports & Analytics** - Generate library statistics and usage reports
-- 🔐 **User Authentication** - Secure login and role-based access control
+- **Book Management** - Add, update, and manage book inventory
+- **User Management** - Register and manage library members
+- **Search & Filter** - Easily search books by title, author, ISBN, or category
+- **Borrowing System** - Track book borrowing and returns
+- **Due Date Management** - Automated reminders for overdue books
+- **Reports & Analytics** - Generate library statistics and usage reports
+- **User Authentication** - Secure login and role-based access control
 
-## Project Structure
-
-```
-LibraryMS/
-├── README.md
-├── src/                    # Source code
-├── tests/                  # Test files
-├── docs/                   # Documentation
-└── config/                 # Configuration files
-```
 
 ## Installation
 
 ### Prerequisites
-- [List your project dependencies here]
-- Node.js (v14 or higher) - if applicable
-- Database (MySQL/PostgreSQL) - if applicable
+- 
+- .NET 5 or 10
+- dotnet sdk
 
 ### Steps
 
@@ -38,80 +28,10 @@ git clone https://github.com/KhanSayeem/LibraryMS.git
 cd LibraryMS
 ```
 
-2. Install dependencies:
+2. Run the app:
 ```bash
-npm install
-# or
-pip install -r requirements.txt
+dotnet build
 ```
-
-3. Configure the application:
 ```bash
-cp .env.example .env
-# Edit .env with your configuration
+dotnet run
 ```
-
-4. Run the application:
-```bash
-npm start
-# or
-python app.py
-```
-
-## Usage
-
-### Getting Started
-
-[Add instructions on how to use your application]
-
-### Example
-
-```bash
-# Example command or usage
-```
-
-## API Endpoints
-
-[Document your API endpoints if applicable]
-
-## Configuration
-
-- **Database**: Configure your database connection in `.env`
-- **Server Port**: Default port is `3000` (or as configured)
-- **Authentication**: JWT tokens for API security
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Testing
-
-```bash
-npm test
-# or
-pytest
-```
-
-## Troubleshooting
-
-[Add common issues and solutions here]
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contact
-
-**Author**: Khan Sayeem  
-**GitHub**: [@KhanSayeem](https://github.com/KhanSayeem)
-
-## Acknowledgments
-
-- Thank you to all contributors
-- [List any libraries, tools, or resources used]
